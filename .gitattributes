@@ -1,0 +1,3 @@
+# Keep every file byte-for-byte identical on all machines.
+# The probe skills verify sha256 checksums, so line endings must never be converted.
+* -text
