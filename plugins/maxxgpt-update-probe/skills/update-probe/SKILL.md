@@ -7,7 +7,7 @@ description: >-
   ถ้าผู้ใช้ให้ลิงก์ release มาด้วย ให้ใช้สกิล update-probe-from-url แทน.
 ---
 
-# Update Probe · แม่แบบเวอร์ชัน 2 · ปลั๊กอิน 0.2.0
+# Update Probe · แม่แบบเวอร์ชัน 3 · ปลั๊กอิน 0.3.0
 
 สกิลนี้เป็นเครื่องมือทดสอบ ไม่ใช่ฟีเจอร์สำหรับลูกค้า เป้าหมายคือได้ผลจริงของช่องทางอัปเดต
 **ทำตามขั้นตอนตรง ๆ ห้ามข้ามขั้น และห้ามหาทางอ้อมเมื่อเจอปัญหา** ให้หยุดแล้วรายงานข้อผิดพลาดตามจริง
@@ -17,10 +17,10 @@ description: >-
 
 | ค่า | ข้อมูล |
 |---|---|
-| เวอร์ชันแม่แบบ | 2 |
-| เวอร์ชันปลั๊กอิน | 0.2.0 |
+| เวอร์ชันแม่แบบ | 3 |
+| เวอร์ชันปลั๊กอิน | 0.3.0 |
 | ไฟล์แม่แบบ | `assets/probe.html` ในโฟลเดอร์ของสกิลนี้ |
-| sha256 ที่ถูกต้อง | `6cad9617360507c0645af7c0a9602b18c2d0213c47c76af5aae3e0453ca6c67e` |
+| sha256 ที่ถูกต้อง | `6facd31e144dc4e28aa3bfd9c74d43eb598d4db3750a2815303afbc6c09ce299` |
 | ชื่อหน้า | `MaxxGPT Update Probe` |
 
 ## ขั้น 1 · ตรวจไฟล์แม่แบบ
@@ -36,7 +36,7 @@ description: >-
 
 ## ขั้น 2 · connector และ capabilities
 
-เวอร์ชันนี้ขอใช้ connector 1 ตัว คือ MaxxGPT ทำขั้นตอนนี้กับทีละ connector
+เวอร์ชันนี้ขอใช้ connector 2 ตัว คือ MaxxGPT และ Meta ads ทำขั้นตอนนี้กับทีละ connector
 
 1. เรียกสกิล `artifact-capabilities` ซึ่งจะแสดงรายชื่อ claude.ai connector ของเซสชันนี้ คู่กับ id ที่ใช้ในชื่อ tool
 2. หา connector จาก tool ที่มันมี ไม่ใช่จากชื่อ โดยดูชื่อ tool ในเซสชันที่เป็นแบบ `mcp__<id>__<ชื่อ tool>`
@@ -45,17 +45,19 @@ description: >-
 | connector | tool ที่ใช้หา |
 |---|---|
 | MaxxGPT | `get_account_info` |
+| Meta ads | `ads_get_ad_accounts` |
 
 3. เจอตัวเดียว = ใช้ชื่อนั้น · เจอหลายตัว = ถามผู้ใช้ · ไม่เจอ = บอกให้เพิ่ม connector ที่ claude.ai
    ไปที่ Settings และ Connectors แล้ว**หยุด** และรายงานว่าไม่พบ connector ตัวไหน
    URL ของ MaxxGPT คือ `https://mcp.maxxgpt.ai/mcp` · URL ของ Meta ads คือ `https://mcp.facebook.com/ads`
 4. ลองเรียกของจริงหนึ่งครั้งต่อ connector ถ้าได้ error ให้หยุด แล้วคัดลอกข้อความ error ลงรายงาน
    - เรียก `get_account_info` หนึ่งครั้ง tool นี้อ่านอย่างเดียวและไม่ต้องใส่อะไร
+   - เรียก `ads_get_ad_accounts` หนึ่งครั้งด้วย `limit: 1` tool นี้อ่านอย่างเดียว ใส่ `client_conversation_id` เป็นตัวอักษรสุ่ม 20 ตัวจาก A-Z a-z 0-9 และใส่ `advertiser_request` เป็นคำขอของผู้ใช้ตามคำพูดของเขา
 
-capabilities ที่ต้องส่งตอน publish คือ แทน `<ชื่อ MaxxGPT ที่พบ>` ด้วยชื่อที่พบในข้อ 3
+capabilities ที่ต้องส่งตอน publish คือ แทน `<ชื่อ MaxxGPT ที่พบ>` และ `<ชื่อ Meta ads ที่พบ>` ด้วยชื่อที่พบในข้อ 3
 
 ```
-{"db": {}, "mcp": {"servers": [{"server": "<ชื่อ MaxxGPT ที่พบ>", "tools": ["get_account_info"]}]}}
+{"db": {}, "mcp": {"servers": [{"server": "<ชื่อ MaxxGPT ที่พบ>", "tools": ["get_account_info"]}, {"server": "<ชื่อ Meta ads ที่พบ>", "tools": ["ads_get_ad_accounts"]}]}}
 ```
 
 ประกาศ connector ละ**ชื่อเดียว** เท่านั้น ห้ามใส่ชื่อสำรอง เพราะชื่อที่บัญชีไม่มีจะทำให้หน้าขออนุญาตเด้งถามทุกครั้งที่เปิด
@@ -94,7 +96,7 @@ capabilities ที่ต้องส่งตอน publish คือ แทน
 
 เรียก `Artifact` ด้วย `action: "read"` ที่ลิงก์เดิมอีกครั้ง แล้วตรวจสองข้อ
 
-- ข้อความ `maxxgpt-update-probe version=` ต้องตามด้วย 2 และมี `variant=normal`
+- ข้อความ `maxxgpt-update-probe version=` ต้องตามด้วย 3 และมี `variant=normal`
   ถ้าก่อนหน้านี้หน้าเป็น `variant=drive` การ publish รอบนี้คือการถอด Google Drive ออก ให้จดไว้ในรายงานด้วย
 - ถ้าเจอหน้าเดิมในขั้น 3 ลิงก์ต้องเป็นลิงก์เดียวกัน
 
@@ -106,7 +108,7 @@ capabilities ที่ต้องส่งตอน publish คือ แทน
 ผลทดสอบ update-probe
 วันเวลา:
 แอปที่ใช้: Claude desktop โหมด Cowork / Claude Code / อื่น ๆ
-เวอร์ชันปลั๊กอินที่สกิลนี้มาจาก: 0.2.0
+เวอร์ชันปลั๊กอินที่สกิลนี้มาจาก: 0.3.0
 checksum แม่แบบ: ตรง / ไม่ตรง
 connector MaxxGPT: ชื่อที่พบ / เวอร์ชันนี้ไม่ใช้ / ไม่พบ
 หน้าเดิม: เจอ เวอร์ชัน N / ไม่เจอ
