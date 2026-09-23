@@ -1,0 +1,12 @@
+{
+  "name": "maxxgpt-update-probe",
+  "version": "0.1.0",
+  "description": "ปลั๊กอินทดสอบระบบอัปเดตของ MaxxGPT: ติดตั้งหน้า MaxxGPT Update Probe แล้วอัปเดตทับลิงก์เดิม เพื่อพิสูจน์ว่าเวอร์ชันใหม่ส่งถึงบัญชีลูกค้าได้จริง",
+  "author": {
+    "name": "MaxxGPT"
+  },
+  "keywords": [
+    "maxxgpt",
+    "update-test"
+  ]
+}

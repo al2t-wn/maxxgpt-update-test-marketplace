@@ -1,0 +1,24 @@
+{
+  "name": "maxxgpt-update-probe",
+  "version": 2,
+  "files": [
+    {
+      "path": "probe.html",
+      "url": "probe.html",
+      "sha256": "6cad9617360507c0645af7c0a9602b18c2d0213c47c76af5aae3e0453ca6c67e"
+    }
+  ],
+  "capabilities": {
+    "db": {},
+    "mcp": {
+      "servers": [
+        {
+          "server": "{{MAXXGPT_CONNECTOR}}",
+          "tools": [
+            "get_account_info"
+          ]
+        }
+      ]
+    }
+  }
+}

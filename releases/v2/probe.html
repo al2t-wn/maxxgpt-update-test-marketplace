@@ -1,0 +1,503 @@
+<title>MaxxGPT Update Probe</title>
+<!-- maxxgpt-update-probe version=2 plugin=0.2.0 variant=normal -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anuphan:wght@600;700&family=IBM+Plex+Sans+Thai:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  color-scheme:light;
+  --ground:#EEF1EC; --surface:#FFFFFF; --surface-2:#F5F7F3; --line:#D6DDD8;
+  --ink:#17201C; --muted:#5B6863; --on-accent:#FFFFFF;
+  --v1:#0E6B66; --v1-soft:#DCEDEA; --v2:#A8620F; --v2-soft:#F6E8D3; --v3:#5B4FB3; --v3-soft:#E7E3F8;
+  --ok:#1F7A4D; --ok-soft:#DDF0E4; --warn:#8F5B00; --warn-soft:#F8EDD5; --bad:#B03A2E; --bad-soft:#F7E0DC;
+  --display:"Anuphan","IBM Plex Sans Thai",system-ui,sans-serif;
+  --body:"IBM Plex Sans Thai",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --ground:#121815; --surface:#19201D; --surface-2:#1F2824; --line:#2C3632;
+    --ink:#E3EAE6; --muted:#95A39D; --on-accent:#0E1512;
+    --v1:#4FBDB5; --v1-soft:#173230; --v2:#E0A04A; --v2-soft:#3A2A12; --v3:#A99BF0; --v3-soft:#29243F;
+    --ok:#66C894; --ok-soft:#15301F; --warn:#E6B24E; --warn-soft:#352812; --bad:#F07B6C; --bad-soft:#3A1C18;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --ground:#121815; --surface:#19201D; --surface-2:#1F2824; --line:#2C3632;
+  --ink:#E3EAE6; --muted:#95A39D; --on-accent:#0E1512;
+  --v1:#4FBDB5; --v1-soft:#173230; --v2:#E0A04A; --v2-soft:#3A2A12; --v3:#A99BF0; --v3-soft:#29243F;
+  --ok:#66C894; --ok-soft:#15301F; --warn:#E6B24E; --warn-soft:#352812; --bad:#F07B6C; --bad-soft:#3A1C18;
+}
+.app{--accent:var(--v1); --accent-soft:var(--v1-soft)}
+.app[data-v="2"]{--accent:var(--v2); --accent-soft:var(--v2-soft)}
+.app[data-v="3"]{--accent:var(--v3); --accent-soft:var(--v3-soft)}
+
+*{box-sizing:border-box}
+body{background:var(--ground);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.6;padding-inline:16px;padding-block:28px 56px;-webkit-font-smoothing:antialiased}
+.app{max-width:760px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+h1,h2{font-family:var(--display);margin:0;text-wrap:balance}
+h1{font-size:30px;font-weight:700;letter-spacing:-.01em;line-height:1.15}
+h2{font-size:16px;font-weight:600}
+p{margin:0}
+.mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+button,input{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:6px}
+
+.head{display:flex;flex-wrap:wrap;gap:16px 24px;align-items:stretch;justify-content:space-between}
+.id{display:flex;flex-direction:column;gap:6px;min-width:0;flex:1 1 320px}
+.eyebrow{font-size:12px;font-weight:600;letter-spacing:.06em;color:var(--muted)}
+.lede{color:var(--muted);max-width:52ch}
+.ver{flex:0 0 auto;min-width:176px;background:var(--accent-soft);border-radius:14px;padding:12px 18px;display:flex;flex-direction:column;justify-content:center;gap:2px}
+.ver-k{font-size:12px;font-weight:600;color:var(--accent);letter-spacing:.04em}
+.ver-n{font-family:var(--display);font-size:60px;font-weight:700;line-height:1;color:var(--accent)}
+.ver-sub{font-size:11.5px;color:var(--muted)}
+.round{font-size:12px;font-weight:600;color:var(--bad);background:var(--bad-soft);border-radius:999px;padding:1px 10px;align-self:flex-start;margin-top:4px}
+
+.block{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px 18px;display:flex;flex-direction:column;gap:12px}
+.block-head{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap}
+.hint{font-size:13px;color:var(--muted)}
+
+.checks{margin:0;padding-left:22px;display:flex;flex-direction:column;gap:6px}
+.checks li::marker{color:var(--accent);font-family:var(--mono);font-weight:500}
+
+.row{display:flex;gap:8px;flex-wrap:wrap}
+.row input{flex:1 1 240px;min-width:0;border:1px solid var(--line);background:var(--surface-2);border-radius:9px;padding:9px 12px}
+.row input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+.btn{border:1px solid var(--accent);background:var(--accent);color:var(--on-accent);border-radius:9px;padding:9px 16px;font-weight:600;cursor:pointer;white-space:nowrap}
+.btn:hover{filter:brightness(1.07)}
+.btn:disabled{opacity:.45;cursor:not-allowed;filter:none}
+.btn.ghost{background:transparent;color:var(--accent)}
+
+.list{list-style:none;margin:0;padding:0;border-top:1px solid var(--line)}
+.item{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 12px;padding:10px 0;border-bottom:1px solid var(--line);align-items:baseline}
+.item .txt{overflow-wrap:anywhere}
+.item .when{font-size:12px;color:var(--muted);grid-column:1/-1}
+.tag{font-size:12px;font-weight:600;padding:1px 9px;border-radius:999px;white-space:nowrap}
+.tag.v1{background:var(--v1-soft);color:var(--v1)}
+.tag.v2{background:var(--v2-soft);color:var(--v2)}
+.tag.v3{background:var(--v3-soft);color:var(--v3)}
+.tag.vx{background:var(--surface-2);color:var(--muted);border:1px solid var(--line)}
+.tag.ok{background:var(--ok-soft);color:var(--ok)}
+.tag.bad{background:var(--bad-soft);color:var(--bad)}
+.empty{font-size:13.5px;color:var(--muted);padding:6px 0}
+
+.kv{display:grid;grid-template-columns:auto minmax(0,1fr);gap:6px 16px;margin:0;font-size:14px}
+.kv dt{color:var(--muted)}
+.kv dd{margin:0;overflow-wrap:anywhere}
+
+.note{border-radius:9px;padding:9px 12px;font-size:13.5px}
+.note.ok{background:var(--ok-soft);color:var(--ok)}
+.note.warn{background:var(--warn-soft);color:var(--warn)}
+.note.bad{background:var(--bad-soft);color:var(--bad)}
+.note.info{background:var(--surface-2);color:var(--muted)}
+
+.status{display:grid;grid-template-columns:auto minmax(0,1fr);gap:8px 14px;margin:0;font-size:14px;align-items:center}
+.status dt{color:var(--muted)}
+.status dd{margin:0;display:flex;flex-wrap:wrap;gap:6px}
+.chip{display:inline-flex;align-items:center;gap:7px;font-size:13px;padding:3px 11px;border-radius:999px;background:var(--surface-2);border:1px solid var(--line)}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--muted);flex:none}
+.chip.ok .dot{background:var(--ok)}
+.chip.bad .dot{background:var(--bad)}
+.chip.warn .dot{background:var(--warn)}
+.foot{font-size:12.5px;color:var(--muted);text-align:center}
+@media (max-width:520px){ h1{font-size:25px} .ver{min-width:0;flex:1 1 100%} .ver-n{font-size:48px} .status{grid-template-columns:1fr} }
+</style>
+
+<div class="app" data-v="2">
+  <header class="head">
+    <div class="id">
+      <p class="eyebrow">MaxxGPT · หน้าทดสอบระบบอัปเดต</p>
+      <h1>Update Probe</h1>
+      <p class="lede">หน้านี้ใช้ตรวจว่าเวอร์ชันใหม่ส่งมาถึงบัญชีนี้ครบหรือไม่ ใช้คู่กับสกิล update-probe ในปลั๊กอินทดสอบ</p>
+      <span class="round" id="roundTag" hidden>รอบทดสอบ Google Drive</span>
+    </div>
+    <div class="ver" aria-label="เวอร์ชันของหน้านี้">
+      <span class="ver-k">เวอร์ชันหน้า</span>
+      <span class="ver-n" id="verNum">2</span>
+      <span class="ver-sub mono">ปลั๊กอิน 0.2.0 · สร้าง 2026-09-22</span>
+    </div>
+  </header>
+
+  <section class="block" aria-labelledby="h-check">
+    <h2 id="h-check">สิ่งที่ต้องตรวจในรอบนี้</h2>
+    <ol class="checks" id="checks"></ol>
+  </section>
+
+  <section class="block" aria-labelledby="h-notes">
+    <div class="block-head">
+      <h2 id="h-notes">ข้อมูลที่ต้องอยู่รอดข้ามเวอร์ชัน</h2>
+      <span class="hint mono" id="noteCount"></span>
+    </div>
+    <p class="hint">บันทึกข้อความก่อนอัปเดต แล้วดูว่าหลังอัปเดตข้อความยังอยู่ครบ ป้ายด้านขวาบอกว่าข้อความนั้นบันทึกตอนหน้าเป็นเวอร์ชันไหน</p>
+    <form class="row" id="noteForm" autocomplete="off">
+      <input id="noteInput" type="text" maxlength="200" aria-label="ข้อความทดสอบ" placeholder="เช่น บันทึกก่อนอัปเดต รอบที่ 1">
+      <button class="btn" id="noteSave" type="submit" disabled>บันทึก</button>
+    </form>
+    <div id="noteMsg"></div>
+    <ul class="list" id="noteList"></ul>
+  </section>
+
+  <section class="block" aria-labelledby="h-hist">
+    <h2 id="h-hist">เวอร์ชันที่หน้านี้เคยเป็น</h2>
+    <p class="hint">หน้าจะจดเวอร์ชันของตัวเองไว้ครั้งแรกที่ถูกเปิด ถ้าอัปเดตทับลิงก์เดิมสำเร็จ รายการนี้จะมีหลายเวอร์ชันในหน้าเดียวกัน</p>
+    <ul class="list" id="verList"></ul>
+  </section>
+
+  <section class="block" aria-labelledby="h-maxx">
+    <div class="block-head">
+      <h2 id="h-maxx">บัญชีที่ผูกกับ MaxxGPT</h2>
+      <button class="btn ghost" id="btn-maxx" type="button" hidden>ดึงบัญชีจาก MaxxGPT</button>
+    </div>
+    <div id="body-maxx"></div>
+  </section>
+
+  <section class="block" aria-labelledby="h-meta">
+    <div class="block-head">
+      <h2 id="h-meta">บัญชีโฆษณาจาก Meta ads</h2>
+      <button class="btn ghost" id="btn-meta" type="button" hidden>ดึงบัญชีโฆษณาจาก Meta ads</button>
+    </div>
+    <div id="body-meta"></div>
+  </section>
+
+  <section class="block" aria-labelledby="h-drive" id="sec-drive" hidden>
+    <div class="block-head">
+      <h2 id="h-drive">Google Drive</h2>
+      <button class="btn ghost" id="btn-drive" type="button" hidden>ลองเรียก Google Drive</button>
+    </div>
+    <div id="body-drive"></div>
+  </section>
+
+  <section class="block" aria-labelledby="h-status">
+    <div class="block-head">
+      <h2 id="h-status">สถานะในมุมมองนี้</h2>
+      <button class="btn ghost" id="btn-status" type="button">อ่านสถานะใหม่</button>
+    </div>
+    <p class="hint">การอ่านสถานะไม่ทำให้ระบบถามขออนุญาต ใช้จดผลก่อนและหลังกดปุ่มแต่ละส่วน</p>
+    <dl class="status" id="status"></dl>
+  </section>
+
+  <p class="foot">ทดสอบเสร็จแล้วลบหน้านี้ได้จากรายการ Artifact ข้อมูลทดสอบในหน้าจะถูกลบไปพร้อมกัน</p>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  var PROBE = { version: 2, plugin: "0.2.0", built: "2026-09-22", usesMaxx: true, usesMeta: false, driveRound: false };
+  var DRIVE_NAME = "Google Drive";
+  var NOTES = "probe_notes", VERS = "probe_versions";
+
+  var CHECKS = {
+    1: [
+      "ตัวเลขเวอร์ชันมุมขวาบนต้องเป็น 1 และป้ายเป็นสีเขียวอมฟ้า",
+      "บันทึกข้อความทดสอบอย่างน้อยหนึ่งรายการในส่วนถัดไป",
+      "คัดลอกลิงก์ของหน้านี้เก็บไว้ ใช้เทียบหลังอัปเดต",
+      "ส่วน MaxxGPT และ Meta ads ต้องบอกว่าเวอร์ชันนี้ยังไม่ขอใช้ connector"
+    ],
+    2: [
+      "ตัวเลขเวอร์ชันมุมขวาบนต้องเป็น 2 และป้ายเปลี่ยนเป็นสีอำพัน",
+      "ข้อความที่บันทึกตอนเวอร์ชัน 1 ต้องยังอยู่ครบ",
+      "ลิงก์ของหน้านี้ต้องเป็นลิงก์เดิมที่เก็บไว้ตอนเวอร์ชัน 1",
+      "กดดึงบัญชีจาก MaxxGPT แล้วจดว่ามีหน้าขออนุญาตขึ้นหรือไม่ และได้ชื่อบัญชีถูกต้องหรือไม่"
+    ],
+    3: [
+      "ตัวเลขเวอร์ชันมุมขวาบนต้องเป็น 3 และป้ายเปลี่ยนเป็นสีม่วง",
+      "ข้อความที่บันทึกตอนเวอร์ชันก่อน ๆ ต้องยังอยู่ครบ",
+      "ลิงก์ของหน้านี้ต้องเป็นลิงก์เดิม",
+      "จดสถานะในส่วนล่างสุดก่อนกดปุ่มใด ๆ",
+      "กดดึงบัญชีจาก MaxxGPT แล้วจดว่าระบบถามขออนุญาตซ้ำหรือไม่ ทั้งที่เคยอนุญาตไว้ตอนเวอร์ชัน 2",
+      "กดดึงบัญชีโฆษณาจาก Meta ads แล้วจดว่าหน้าขออนุญาตถามเฉพาะ Meta ads หรือถามทุก connector"
+    ]
+  };
+  var DRIVE_CHECKS = [
+    "รอบนี้หน้าประกาศ Google Drive ไว้ด้วย ถ้าบัญชีนี้ไม่ได้ต่อ Drive ให้จดว่าหน้าขออนุญาตแสดงอะไรเกี่ยวกับ Drive",
+    "กดลองเรียก Google Drive แล้วจดข้อความที่ขึ้น",
+    "ปิดหน้านี้แล้วเปิดใหม่ จดว่าหน้าขออนุญาตเด้งขึ้นเองหรือไม่ และขึ้นว่าอะไร",
+    "รันสกิล update-probe อีกครั้งเพื่อถอด Google Drive ออก แล้วเปิดหน้าใหม่ จดว่าหน้าขออนุญาตหยุดเด้งหรือไม่"
+  ];
+
+  var S = { db:null, mcp:null, perms:null, dbState:"loading", servers:[] };
+
+  function $(id){ return document.getElementById(id); }
+  function el(tag, cls, text){ var e=document.createElement(tag); if(cls) e.className=cls; if(text!=null) e.textContent=text; return e; }
+  function fmtTime(iso){
+    try { return new Date(iso).toLocaleString("th-TH",{day:"numeric",month:"short",year:"numeric",hour:"2-digit",minute:"2-digit"}); }
+    catch(e){ return String(iso||""); }
+  }
+  function vClass(n){ return n===1 ? "v1" : n===2 ? "v2" : n===3 ? "v3" : "vx"; }
+  function note(kind, text){ var n = el("p", "note " + kind, text); n.setAttribute("role","status"); return n; }
+  function convId(){
+    var abc = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789", out = "";
+    try { var a = new Uint32Array(20); crypto.getRandomValues(a); for(var i=0;i<20;i++) out += abc[a[i] % abc.length]; }
+    catch(e){ for(var j=0;j<20;j++) out += abc[Math.floor(Math.random()*abc.length)]; }
+    return out;
+  }
+  var CONV = convId();
+
+  /* ---------- static parts ---------- */
+  function renderChecks(){
+    var ol = $("checks"); ol.innerHTML = "";
+    var list = (CHECKS[PROBE.version] || []).slice();
+    if(PROBE.driveRound) list = list.concat(DRIVE_CHECKS);
+    list.forEach(function(t){ ol.appendChild(el("li", null, t)); });
+  }
+
+  /* ---------- notes and version history (db) ---------- */
+  function renderNotes(docs){
+    var list = $("noteList"); list.innerHTML = "";
+    $("noteCount").textContent = docs.length ? (docs.length + " รายการ") : "";
+    if(!docs.length){ list.appendChild(el("li","empty","ยังไม่มีข้อความทดสอบ บันทึกหนึ่งรายการก่อนอัปเดต")); return; }
+    docs.forEach(function(d){
+      var v = d.data() || {}, n = Number(v.savedByVersion);
+      var li = el("li","item");
+      li.appendChild(el("span","txt", String(v.text || "")));
+      li.appendChild(el("span", "tag " + vClass(n), n ? ("บันทึกตอนเวอร์ชัน " + n) : "ไม่ทราบเวอร์ชัน"));
+      li.appendChild(el("span","when", fmtTime(v.createdAt)));
+      list.appendChild(li);
+    });
+  }
+  function renderVersions(docs){
+    var list = $("verList"); list.innerHTML = "";
+    if(!docs.length){ list.appendChild(el("li","empty", S.db ? "ยังไม่มีบันทึกเวอร์ชัน" : "ดูประวัติไม่ได้ เพราะมุมมองนี้ใช้ฐานข้อมูลไม่ได้")); return; }
+    docs.forEach(function(d){
+      var v = d.data() || {}, n = Number(v.version);
+      var cur = n === PROBE.version && !!v.driveRound === PROBE.driveRound;
+      var li = el("li","item");
+      li.appendChild(el("span","txt mono", "เวอร์ชัน " + v.version + " · ปลั๊กอิน " + (v.plugin || "?") + (v.driveRound ? " · รอบ Google Drive" : "")));
+      li.appendChild(el("span", "tag " + (cur ? vClass(n) : "vx"), cur ? "เวอร์ชันที่เปิดอยู่" : "เวอร์ชันก่อนหน้า"));
+      li.appendChild(el("span","when", "เปิดครั้งแรก " + fmtTime(v.firstSeenAt)));
+      list.appendChild(li);
+    });
+  }
+  function dbError(where, err){
+    var code = (err && err.code) || "unavailable";
+    var box = $("noteMsg"); box.innerHTML = "";
+    if(code === "invalid_argument" && where === "write"){
+      S.dbState = "readonly"; renderStatus();
+      box.appendChild(note("warn","บัญชีที่เปิดอยู่เขียนข้อมูลในหน้านี้ไม่ได้ ใช้บัญชีที่ติดตั้งหน้านี้ทดสอบ"));
+      $("noteSave").disabled = true;
+    } else if(code === "quota_exceeded"){
+      box.appendChild(note("bad","พื้นที่เก็บข้อมูลของหน้านี้เต็ม ลบหน้าแล้วติดตั้งใหม่"));
+    } else if(code === "revoked" || code === "not_granted" || code === "capability_disabled" || code === "capability_removed"){
+      S.dbState = "none"; renderStatus();
+      box.appendChild(note("bad","มุมมองนี้ใช้ฐานข้อมูลไม่ได้ เปิดหน้านี้จาก claude.ai ในบัญชีที่ติดตั้ง"));
+    } else {
+      box.appendChild(note("warn","บันทึกหรืออ่านข้อมูลไม่สำเร็จในตอนนี้ (" + code + ") ลองใหม่อีกครั้ง"));
+    }
+  }
+  function startDb(db){
+    S.db = db; S.dbState = "ready"; renderStatus();
+    $("noteSave").disabled = false;
+    try {
+      db.collection(NOTES).orderBy("createdAt","desc").limit(50).onSnapshot(function(snap){ renderNotes(snap.docs); }, function(err){ dbError("read", err); });
+      db.collection(VERS).orderBy("firstSeenAt","asc").onSnapshot(function(snap){ renderVersions(snap.docs); }, function(){ renderVersions([]); });
+    } catch(e){ dbError("read", e); }
+    var ref = db.doc(VERS + "/v" + PROBE.version + (PROBE.driveRound ? "-drive" : ""));
+    ref.get().then(function(s){
+      if(!s.exists) return ref.set({ version: PROBE.version, plugin: PROBE.plugin, driveRound: PROBE.driveRound, firstSeenAt: new Date().toISOString() });
+    }).catch(function(){ /* view-only viewers cannot record; the list still renders */ });
+  }
+  var saving = false;
+  $("noteForm").addEventListener("submit", function(e){
+    e.preventDefault();
+    var input = $("noteInput"), text = input.value.trim();
+    if(!S.db || saving || !text) return;
+    saving = true; $("noteSave").disabled = true; $("noteMsg").innerHTML = "";
+    S.db.collection(NOTES).add({ text: text, savedByVersion: PROBE.version, createdAt: new Date().toISOString() })
+      .then(function(){ input.value = ""; })
+      .catch(function(err){ dbError("write", err); })
+      .then(function(){ saving = false; if(S.dbState === "ready") $("noteSave").disabled = false; });
+  });
+
+  /* ---------- connectors ---------- */
+  function payloadOf(res){
+    var p = res && res.payload;
+    if(typeof p === "string"){ try { p = JSON.parse(p); } catch(e){} }
+    return (p && typeof p === "object") ? p : {};
+  }
+  function kvList(rows){
+    var dl = el("dl","kv");
+    rows.forEach(function(r){ dl.appendChild(el("dt", null, r[0])); dl.appendChild(el("dd", r[2] || null, r[1])); });
+    return dl;
+  }
+
+  var CONNECTORS = [
+    {
+      key: "maxx", label: "MaxxGPT", tool: "get_account_info", enabled: PROBE.usesMaxx,
+      off: "เวอร์ชันนี้ยังไม่ขอใช้ MaxxGPT เวอร์ชัน 2 จะเพิ่มสิทธิ์นี้ เพื่อทดสอบว่าการเพิ่มสิทธิ์ตอนอัปเดตทำงานได้",
+      idle: "กดปุ่มด้านขวาเพื่อเรียก get_account_info ครั้งแรกที่กด ระบบอาจถามขออนุญาต ให้จดไว้ว่าหน้าขออนุญาตขึ้นหรือไม่",
+      input: function(){ return {}; },
+      render: function(body, d, server){
+        var a = d.ad_account || {}, pg = d.page || {};
+        body.appendChild(note("ok","เรียก MaxxGPT สำเร็จ"));
+        body.appendChild(kvList([
+          ["ชื่อบัญชีโฆษณา", a.name || "ไม่มีข้อมูล"], ["Account ID", a.account_id || "ไม่มีข้อมูล", "mono"],
+          ["สกุลเงิน", a.currency || "ไม่มีข้อมูล"], ["เพจ", pg.name || "ไม่มีเพจที่ผูกไว้"], ["connector ที่ใช้", server]
+        ]));
+      }
+    },
+    {
+      key: "meta", label: "Meta ads", tool: "ads_get_ad_accounts", enabled: PROBE.usesMeta,
+      off: "เวอร์ชันนี้ยังไม่ขอใช้ Meta ads เวอร์ชัน 3 จะเพิ่มสิทธิ์นี้ เพื่อทดสอบการเพิ่ม connector ตัวที่สองตอนอัปเดต",
+      idle: "กดปุ่มด้านขวาเพื่อดึงรายชื่อบัญชีโฆษณาที่บัญชี Facebook นี้เข้าถึงได้ ครั้งแรกที่กด ระบบอาจถามขออนุญาตเฉพาะ Meta ads",
+      input: function(){ return { client_conversation_id: CONV, advertiser_request: "ดูว่าบัญชีนี้เข้าถึงบัญชีโฆษณาอะไรบ้าง", limit: 25 }; },
+      render: function(body, d, server){
+        var list = Array.isArray(d.ad_accounts) ? d.ad_accounts : [];
+        body.appendChild(note("ok","เรียก Meta ads สำเร็จ พบ " + list.length + " บัญชีในหน้าแรก" + (d.next_cursor ? " และยังมีหน้าถัดไป" : "")));
+        if(!list.length){ body.appendChild(el("p","hint","บัญชี Facebook นี้ยังไม่มีสิทธิ์เข้าถึงบัญชีโฆษณาใด")); }
+        var ul = el("ul","list");
+        list.slice(0,5).forEach(function(a){
+          var li = el("li","item");
+          li.appendChild(el("span","txt", (a.ad_account_name || "ไม่มีชื่อ") + " · " + (a.currency || "?")));
+          var usable = a.is_ads_mcp_enabled !== false && a.is_queryable !== false;
+          li.appendChild(el("span", "tag " + (usable ? "ok" : "bad"), usable ? "ใช้ได้" : "ใช้กับ Ads MCP ไม่ได้"));
+          li.appendChild(el("span","when mono", "ID " + (a.ad_account_id || "?")));
+          ul.appendChild(li);
+        });
+        if(list.length) body.appendChild(ul);
+        if(list.length > 5) body.appendChild(el("p","hint","และอีก " + (list.length - 5) + " บัญชี"));
+        body.appendChild(kvList([["connector ที่ใช้", server]]));
+      }
+    },
+    {
+      key: "drive", label: "Google Drive", tool: "search_files", enabled: PROBE.driveRound,
+      off: "", fallbackServer: DRIVE_NAME,
+      idle: "รอบนี้หน้าประกาศ Google Drive ไว้ ถ้าบัญชีนี้ไม่ได้ต่อ Drive การเรียกควรล้มเหลว ให้จดข้อความที่ขึ้นลงผลทดสอบ",
+      input: function(){ return { query: "owner = 'me'", pageSize: 1, excludeContentSnippets: true }; },
+      render: function(body, d, server){
+        var files = Array.isArray(d.files) ? d.files : [];
+        body.appendChild(note("warn","Google Drive ตอบกลับมา แปลว่าบัญชีนี้ต่อ Drive อยู่ ผลรอบนี้จึงเป็นกรณีเทียบ ไม่ใช่กรณีที่ไม่มี Drive"));
+        body.appendChild(kvList([["ไฟล์ที่ได้กลับมา", String(files.length)], ["connector ที่ใช้", server]]));
+      }
+    }
+  ];
+
+  function errMessage(code, err, label){
+    var s = (err && err.server) || label;
+    switch(code){
+      case "not_granted": case "capability_disabled": case "capability_removed":
+        return ["bad","มุมมองนี้เรียก connector ไม่ได้ เปิดหน้านี้จาก claude.ai ในบัญชีที่ติดตั้ง"];
+      case "server_not_connected":
+        return ["bad","บัญชีนี้ไม่มี connector ชื่อ " + s + " ถ้าเป็นรอบทดสอบ Google Drive นี่คือผลที่คาดไว้ ให้จดข้อความนี้ลงผลทดสอบ ถ้าไม่ใช่ ให้เพิ่ม connector ที่ claude.ai แล้วไปที่ Settings และ Connectors"];
+      case "needs_reauth":
+        return ["bad","การเชื่อมต่อ " + s + " หมดอายุ เชื่อมต่อใหม่ที่ claude.ai แล้วไปที่ Settings และ Connectors"];
+      case "not_in_manifest":
+        return ["warn","สิทธิ์เรียก " + s + " ของหน้านี้ถูกปิดหรือถูกปฏิเสธไว้ หรือหน้านี้ไม่ได้ประกาศ " + s + " ไว้"];
+      case "selection_required":
+        return ["warn","บัญชีนี้มี connector ชื่อ " + s + " มากกว่าหนึ่งตัว เลือกตัวที่ต้องการจากหน้าต่างที่ Claude แสดง"];
+      case "blocked_by_policy": case "approval_required":
+        return ["bad","องค์กรของบัญชีนี้ปิดเครื่องมือนี้ไว้ หรือต้องได้รับอนุมัติก่อนใช้"];
+      case "tool_error":
+        return ["bad", s + " ตอบว่าเกิดข้อผิดพลาด: " + ((err && err.message) || "ไม่ทราบสาเหตุ")];
+      case "server_unavailable":
+        return ["warn", s + " ไม่ตอบในตอนนี้ รอสักครู่แล้วกดอีกครั้ง"];
+      default:
+        return ["warn","เรียกไม่สำเร็จ (" + (code || "upstream_error") + ") ลองกดอีกครั้ง"];
+    }
+  }
+
+  function findServer(c){
+    var hit = S.servers.filter(function(sv){
+      return sv.kind !== "artifact" && (sv.tools || []).some(function(t){ return t.name === c.tool; });
+    })[0];
+    return hit ? hit.server : (c.fallbackServer || null);
+  }
+  function refreshServers(){
+    if(!S.mcp) return Promise.resolve();
+    return S.mcp.listTools().then(function(r){ S.servers = r.servers || []; }).catch(function(){ S.servers = []; });
+  }
+
+  function setupConnector(c){
+    var body = $("body-" + c.key), btn = $("btn-" + c.key);
+    body.innerHTML = "";
+    if(c.key === "drive") $("sec-drive").hidden = !c.enabled;
+    if(!c.enabled){ if(c.off) body.appendChild(note("info", c.off)); return; }
+    if(!S.mcp){ body.appendChild(note("bad","มุมมองนี้เรียก connector ไม่ได้ เปิดหน้านี้จาก claude.ai ในบัญชีที่ติดตั้ง")); return; }
+    var server = findServer(c);
+    if(!server){
+      body.appendChild(note("bad","ไม่พบ connector ที่มี " + c.tool + " ในสิทธิ์ของหน้านี้ ตอน publish อาจไม่ได้ประกาศ " + c.label + " ไว้ หรือบัญชีนี้ไม่มี connector นี้ ให้รันสกิล update-probe ใหม่"));
+      return;
+    }
+    body.appendChild(el("p","hint", c.idle));
+    btn.hidden = false;
+  }
+  function callConnector(c){
+    if(!S.mcp || c.busy) return;
+    c.busy = true;
+    var body = $("body-" + c.key), btn = $("btn-" + c.key), label = btn.textContent;
+    btn.disabled = true; btn.textContent = "กำลังเรียก…";
+    refreshServers().then(function(){
+      var server = findServer(c);
+      if(!server) throw { code: "not_in_manifest" };
+      return S.mcp.callTool(server, c.tool, c.input(), { cache:false }).then(function(res){
+        body.innerHTML = "";
+        c.render(body, payloadOf(res), server);
+      });
+    }).catch(function(err){
+      var m = errMessage((err && err.code) || "upstream_error", err, c.label);
+      body.innerHTML = ""; body.appendChild(note(m[0], m[1]));
+      if(err && err.code) body.appendChild(el("p","hint mono","รหัส: " + err.code));
+    }).then(function(){
+      c.busy = false; btn.disabled = false; btn.textContent = label;
+      renderStatus();
+    });
+  }
+  CONNECTORS.forEach(function(c){ $("btn-" + c.key).addEventListener("click", function(){ callConnector(c); }); });
+
+  /* ---------- status ---------- */
+  var CONSENT_TEXT = { granted:["ok","อนุญาตแล้ว"], prompt:["warn","ยังไม่ถูกถาม"], denied:["bad","ปฏิเสธในรอบนี้"], unavailable:["bad","ใช้ไม่ได้"] };
+  var AUTH_TEXT = { connected:["ok","เชื่อมต่ออยู่"], needs_reauth:["bad","ต้องเชื่อมต่อใหม่"], unknown:["warn","ยังไม่ทราบ"] };
+  function chip(kind, text){ var c = el("span", "chip " + (kind || "")); c.appendChild(el("span","dot")); c.appendChild(document.createTextNode(text)); return c; }
+  function renderStatus(){
+    var dl = $("status");
+    var dbText = { loading:["warn","กำลังเชื่อม"], ready:["ok","พร้อมใช้"], readonly:["warn","อ่านได้อย่างเดียว"], none:["bad","ใช้ไม่ได้ในมุมมองนี้"] }[S.dbState];
+    var rows = [["ฐานข้อมูล", [chip(dbText[0], dbText[1])]]];
+    var pending = [];
+    CONNECTORS.forEach(function(c){
+      if(!c.enabled){ if(c.key !== "drive") rows.push([c.label, [chip("", "เวอร์ชันนี้ไม่ได้ขอใช้")]]); return; }
+      var server = S.mcp ? findServer(c) : null;
+      var cells = [];
+      rows.push([c.label, cells]);
+      if(!server){ cells.push(chip("bad", S.mcp ? "ไม่พบในสิทธิ์ของหน้า" : "ใช้ไม่ได้ในมุมมองนี้")); return; }
+      var listed = S.servers.filter(function(sv){ return sv.server === server && sv.kind !== "artifact"; })[0];
+      var auth = listed ? (AUTH_TEXT[listed.authStatus] || AUTH_TEXT.unknown) : ["bad","บัญชีนี้ไม่มี connector นี้"];
+      cells.push(chip("", "ชื่อ " + server));
+      cells.push(chip(auth[0], auth[1]));
+      if(S.perms){
+        var slot = chip("warn","กำลังอ่านการอนุญาต");
+        cells.push(slot);
+        pending.push(S.perms.state("mcp:" + server).catch(function(){ return "unavailable"; }).then(function(st){
+          var t = CONSENT_TEXT[st] || CONSENT_TEXT.unavailable;
+          slot.replaceWith(chip(t[0], "การอนุญาต: " + t[1]));
+        }));
+      }
+    });
+    dl.innerHTML = "";
+    rows.forEach(function(r){
+      dl.appendChild(el("dt", null, r[0]));
+      var dd = el("dd"); r[1].forEach(function(x){ dd.appendChild(x); }); dl.appendChild(dd);
+    });
+    return Promise.all(pending);
+  }
+  $("btn-status").addEventListener("click", function(){ refreshServers().then(renderStatus); });
+
+  /* ---------- boot ---------- */
+  $("roundTag").hidden = !PROBE.driveRound;
+  renderChecks(); renderNotes([]); renderVersions([]); renderStatus();
+  CONNECTORS.forEach(function(c){ if(!c.enabled){ setupConnector(c); } else { $("body-" + c.key).appendChild(el("p","hint","กำลังตรวจสิทธิ์ของหน้า…")); if(c.key === "drive") $("sec-drive").hidden = false; } });
+  var use = function(n){ return (window.claude && window.claude.use) ? window.claude.use(n).catch(function(){ return null; }) : Promise.resolve(null); };
+  use("db").then(function(db){
+    if(db) startDb(db);
+    else { S.dbState = "none"; renderStatus(); renderVersions([]); $("noteMsg").appendChild(note("bad","มุมมองนี้ใช้ฐานข้อมูลไม่ได้ เปิดหน้านี้จาก claude.ai ในบัญชีที่ติดตั้ง")); }
+  });
+  var anyConnector = CONNECTORS.some(function(c){ return c.enabled; });
+  Promise.all([anyConnector ? use("mcp") : Promise.resolve(null), use("permissions")]).then(function(r){
+    S.mcp = r[0]; S.perms = r[1];
+    return refreshServers();
+  }).then(function(){
+    CONNECTORS.forEach(function(c){ if(c.enabled) setupConnector(c); });
+    renderStatus();
+  });
+})();
+</script>

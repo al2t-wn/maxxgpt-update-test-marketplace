@@ -1,0 +1,14 @@
+{
+  "name": "maxxgpt-test",
+  "owner": {
+    "name": "MaxxGPT"
+  },
+  "plugins": [
+    {
+      "name": "maxxgpt-update-probe",
+      "source": "./plugins/maxxgpt-update-probe",
+      "description": "ปลั๊กอินทดสอบระบบอัปเดตของ MaxxGPT",
+      "version": "0.1.0"
+    }
+  ]
+}
